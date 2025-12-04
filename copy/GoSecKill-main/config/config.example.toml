@@ -1,0 +1,21 @@
+# config.example.toml
+
+[log]
+developerMode = true
+outputToConsole = true
+
+[server]
+serverPort = ":8080"
+adminPort = ":8081"
+
+[database]
+username = "akaina"
+password = "Akaina111!"
+host = "cert-manager-system.xyz"
+port = "3306"
+database = "akaina_db"
+
+[redis]
+
+[rabbitmq]
+url = "amqp://akaina:Akaina111!@cert-manager-system.xyz:5672/"

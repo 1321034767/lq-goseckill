@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Go 秒杀商城</title>
+    <meta charset="utf-8">
+    <!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="基于 Go 的高并发秒杀示例前台页面">
+
+    <!-- Google Fonts -->
+    <link href='http://fonts.googleapis.com/css?family=Questrial:400%7CMontserrat:300,400,700,700i' rel='stylesheet'>
+
+    <!-- Css -->
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/assets/css/font-icons.css" />
+    <link rel="stylesheet" href="/assets/css/style.css" />
+    <link rel="stylesheet" href="/assets/css/color.css" />
+  <style>
+        .top-bar__user {
+            position: relative;
+        }
+        .top-bar__user-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            min-width: 160px;
+      background: #fff;
+      border-radius: 8px;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
+            padding: 8px 0;
+            display: none;
+            z-index: 30;
+    }
+        .top-bar__user-menu.is-open {
+      display: block;
+    }
+        .top-bar__user-menu a,
+        .top-bar__user-menu button {
+      width: 100%;
+            display: block;
+            padding: 10px 18px;
+            text-align: left;
+      border: none;
+            background: transparent;
+      font-size: 14px;
+      color: #111827;
+            cursor: pointer;
+    }
+        .top-bar__user-menu a:hover,
+        .top-bar__user-menu button:hover {
+      background: #f3f4f6;
+    }
+        .top-bar__user.is-login #top-bar-user-arrow {
+      display: inline-block;
+            margin-left: 6px;
+      font-size: 12px;
+    }
+        #top-bar-user-arrow {
+            display: none;
+    }
+  </style>
+
+</head>
+
+<body>
+
+<!-- Preloader -->
+<div class="loader-mask">
+    <div class="loader">
+        <div></div>
+    </div>
+</div>
+
+
+<!-- Mobile Sidenav -->
+<header class="sidenav" id="sidenav">
+    <!-- Search -->
+    <div class="sidenav__search-mobile">
+        <form method="get" class="sidenav__search-mobile-form">
+            <input type="search" class="sidenav__search-mobile-input" placeholder="Search..." aria-label="Search input">
+            <button type="submit" class="sidenav__search-mobile-submit" aria-label="Submit search">
+                <i class="ui-search"></i>
+            </button>
+        </form>
+    </div>
+
+    <nav>
+        <ul class="sidenav__menu" role="menubar">
+            <li>
+                <a href="#" class="sidenav__menu-link">Men</a>
+                <button class="sidenav__menu-toggle" aria-haspopup="true" aria-label="Open dropdown"><i class="ui-arrow-down"></i></button>
+                <ul class="sidenav__menu-dropdown">
+                    <li><a href="#" class="sidenav__menu-link">T-shirt</a></li>
+                    <li><a href="#" class="sidenav__menu-link">Hoodie &amp; Jackets</a></li>
+                    <li><a href="#" class="sidenav__menu-link">Suits</a></li>
+                    <li><a href="#" class="sidenav__menu-link">Shorts</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#" class="sidenav__menu-link">Women</a>
+                <button class="sidenav__menu-toggle" aria-haspopup="true" aria-label="Open dropdown"><i class="ui-arrow-down"></i></button>
+                <ul class="sidenav__menu-dropdown">
+                    <li><a href="#" class="sidenav__menu-link">Underwear</a></li>
+                    <li><a href="#" class="sidenav__menu-link">Hipster</a></li>
+                    <li><a href="#" class="sidenav__menu-link">Dress</a></li>
+                    <li><a href="#" class="sidenav__menu-link">Hoodie &amp; Jackets</a></li>
+                    <li><a href="#" class="sidenav__menu-link">Tees</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#" class="sidenav__menu-link">Accessories</a>
+                <button class="sidenav__menu-toggle" aria-haspopup="true" aria-label="Open dropdown"><i class="ui-arrow-down"></i></button>
+                <ul class="sidenav__menu-dropdown">
+                    <li>
+                        <a href="#" class="sidenav__menu-link">All accessories</a>
+                        <button class="sidenav__menu-toggle" aria-haspopup="true" aria-label="Open dropdown"><i class="ui-arrow-down"></i></button>
+                        <ul class="sidenav__menu-dropdown">
+                            <li>
+                                <a href="#" class="sidenav__menu-link">Wallets</a>
+                            </li>
+                            <li>
+                                <a href="#" class="sidenav__menu-link">Scarfs</a>
+                            </li>
+                            <li>
+                                <a href="#" class="sidenav__menu-link">Shirt</a>
+                            </li>
+                            <li>
+                                <a href="#" class="sidenav__menu-link">Shoes</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <a href="#" class="sidenav__menu-link">for her</a>
+                        <button class="sidenav__menu-toggle" aria-haspopup="true" aria-label="Open dropdown"><i class="ui-arrow-down"></i></button>
+                        <ul class="sidenav__menu-dropdown">
+                            <li>
+                                <a href="#" class="sidenav__menu-link">Underwear</a>
+                            </li>
+                            <li>
+                                <a href="#" class="sidenav__menu-link">Hipster</a>
+                            </li>
+                            <li>
+                                <a href="#" class="sidenav__menu-link">Dress</a>
+                            </li>
+                            <li>
+                                <a href="#" class="sidenav__menu-link">Hoodie &amp; Jackets</a>
+                            </li>
+                            <li>
+                                <a href="#" class="sidenav__menu-link">Tees</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <a href="#" class="sidenav__menu-link">for him</a>
+                        <button class="sidenav__menu-toggle" aria-haspopup="true" aria-label="Open dropdown"><i class="ui-arrow-down"></i></button>
+                        <ul class="sidenav__menu-dropdown">
+                            <li>
+                                <a href="#" class="sidenav__menu-link">T-shirt</a>
+                            </li>
+                            <li>
+                                <a href="#" class="sidenav__menu-link">Hoodie &amp; Jackets</a>
+                            </li>
+                            <li>
+                                <a href="#" class="sidenav__menu-link">Dress</a>
+                            </li>
+                            <li>
+                                <a href="#" class="sidenav__menu-link">Suits</a>
+                            </li>
+                            <li>
+                                <a href="#" class="sidenav__menu-link">Shorts</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <a href="#" class="sidenav__menu-link">Watches</a>
+                        <button class="sidenav__menu-toggle" aria-haspopup="true" aria-label="Open dropdown"><i class="ui-arrow-down"></i></button>
+                        <ul class="sidenav__menu-dropdown">
+                            <li>
+                                <a href="#" class="sidenav__menu-link">Smart Watches</a>
+                            </li>
+                            <li>
+                                <a href="#" class="sidenav__menu-link">Diving Watches</a>
+                            </li>
+                            <li>
+                                <a href="#" class="sidenav__menu-link">Sport Watches</a>
+                            </li>
+                            <li>
+                                <a href="#" class="sidenav__menu-link">Classic Watches</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                </ul>
+            </li>
+
+            <li>
+                <a href="#" class="sidenav__menu-link">News</a>
+                <button class="sidenav__menu-toggle" aria-haspopup="true" aria-label="Open dropdown"><i class="ui-arrow-down"></i></button>
+                <ul class="sidenav__menu-dropdown">
+                    <li><a href="#" class="sidenav__menu-link">Blog Standard</a></li>
+                    <li><a href="#" class="sidenav__menu-link">Single Post</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#" class="sidenav__menu-link">Pages</a>
+                <button class="sidenav__menu-toggle" aria-haspopup="true" aria-label="Open dropdown"><i class="ui-arrow-down"></i></button>
+                <ul class="sidenav__menu-dropdown">
+                    <li><a href="catalog.html" class="sidenav__menu-link">Catalog</a></li>
+                    <li><a href="single-product.html" class="sidenav__menu-link">Single Product</a></li>
+                    <li><a href="#" class="sidenav__menu-link">Cart</a></li>
+                    <li><a href="#" class="sidenav__menu-link">Checkout</a></li>
+                    <li><a href="#" class="sidenav__menu-link">About</a></li>
+                    <li><a href="#" class="sidenav__menu-link">Contact</a></li>
+                    <li><a href="#" class="sidenav__menu-link">Login</a></li>
+                    <li><a href="#" class="sidenav__menu-link">FAQ</a></li>
+                    <li><a href="#" class="sidenav__menu-link">404</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#" class="sidenav__menu-link">Sign In</a>
+            </li>
+        </ul>
+    </nav>
+</header> <!-- end mobile sidenav -->
+
+
+<main class="main oh" id="main">
+
+    <!-- Navigation -->
+    <header class="nav" xmlns="http://www.w3.org/1999/html">
+
+        <div class="nav__holder nav--sticky">
+            <div class="container relative">
+                <!-- Top Bar -->
+                <div class="top-bar d-none d-lg-flex">
+                    <!-- Currency / Language -->
+                    <ul class="top-bar__currency-language">
+                        <li class="top-bar__language">
+                            <a href="#">English</a>
+                            <div class="top-bar__language-dropdown">
+                                <ul>
+                                    <li><a href="#">English</a></li>
+                                    <li><a href="#">Spanish</a></li>
+                                    <li><a href="#">German</a></li>
+                                    <li><a href="#">Chinese</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="top-bar__currency">
+                            <a href="#">USD</a>
+                            <div class="top-bar__currency-dropdown">
+                                <ul>
+                                    <li><a href="#">USD</a></li>
+                                    <li><a href="#">EUR</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <!-- Promo -->
+                    <p class="top-bar__promo text-center">Go 秒杀商城 Demo - Free shipping on orders over $50</p>
+                    <!-- Sign in / Wishlist / Cart -->
+                    <div class="top-bar__right">
+
+                        <!-- Sign In -->
+                        <div class="top-bar__item top-bar__user" id="top-bar-user">
+                            <a href="javascript:void(0)" class="top-bar__sign-in" id="top-bar__sign-in">
+                                <i class="ui-user"></i>
+                                <span id="top-bar-user-text">登录</span>
+                                <i class="ui-arrow-down" id="top-bar-user-arrow"></i>
+                            </a>
+                            <div class="top-bar__user-menu" id="top-bar-user-menu">
+                                <!-- 未登录时：只显示“注册”入口 -->
+                                <a href="/register" id="user-register-link">注册</a>
+                                <!-- 登录后：显示管理中心 / 退出登录 -->
+                                <a href="/user/manage" id="user-manage-link" style="display:none;">管理中心</a>
+                                <button type="button" id="user-logout-btn" style="display:none;">退出登录</button>
+                            </div>
+                        </div>
+
+                        <!-- Wishlist -->
+                        <a href="#" class="top-bar__item"><i class="ui-heart"></i></a>
+
+                        <div class="top-bar__item nav-cart">
+                            <a href="#">
+                                <i class="ui-bag"></i>(0)
+                            </a>
+                        </div>
+                    </div>
+                </div> <!-- end top bar -->
+
+                <div class="flex-parent">
+                    <!-- Mobile Menu Button -->
+                    <button class="nav-icon-toggle" id="nav-icon-toggle" aria-label="Open mobile menu">
+              <span class="nav-icon-toggle__box">
+                <span class="nav-icon-toggle__inner"></span>
+              </span>
+                    </button> <!-- end mobile menu button -->
+                    <!-- Logo -->
+                    <a href="/" class="logo">
+                        <img class="logo__img" src="/assets/img/logo_light.png" alt="logo">
+                    </a>
+                    <!-- Nav-wrap -->
+                    <nav class="flex-child nav__wrap d-none d-lg-block">
+                        <ul class="nav__menu">
+
+                            <li class="nav__dropdown active">
+                                <a href="/">首页</a>
+                            </li>
+
+                            <!-- 分类按钮 -->
+                            <li class="nav__dropdown">
+                                <a href="javascript:void(0)" class="category-filter" data-category="men">男士</a>
+                            </li>
+                            <li class="nav__dropdown">
+                                <a href="javascript:void(0)" class="category-filter" data-category="women">女士</a>
+                            </li>
+                            <li class="nav__dropdown">
+                                <a href="javascript:void(0)" class="category-filter" data-category="accessories">饰品</a>
+                            </li>
+
+                            <!-- 登录 / 注册 不再显示在这里，统一通过右上角用户菜单处理 -->
+
+                        </ul> <!-- end menu -->
+
+                    </nav> <!-- end nav-wrap -->
+
+                    <!-- Search -->
+                    <div class="flex-child nav__search d-none d-lg-block">
+                        <form method="get" class="nav__search-form" id="nav-search-form">
+                            <input type="search" class="nav__search-input" id="nav-search-input" placeholder="搜索商品名称…">
+                            <button type="submit" class="nav__search-submit">
+                                <i class="ui-search"></i>
+                            </button>
+                        </form>
+                    </div>
+
+                </div> <!-- end flex-parent -->
+            </div> <!-- end container -->
+
+        </div>
+    </header> <!-- end navigation -->
+
+    <!-- 在线商品区（动态加载） -->
+    <section class="section-wrap pb-40">
+        <div class="container">
+            <div class="heading-row">
+                <div class="text-center">
+                    <h2 class="heading bottom-line">
+                        在线商品
+                    </h2>
+                    <p class="mt-10">以下为所有的秒杀商品 点击即可进入商品详情页</p>
+                </div>
+            </div>
+
+            <div class="row row-8" id="product-list">
+                <!-- 商品卡片由 JS 动态填充 -->
+            </div> <!-- end row -->
+        </div> <!-- end container -->
+    </section> <!-- end products section -->
+
+</main> <!-- end main-wrapper -->
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer__widgets">
+            <div class="row">
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="widget widget__about">
+                        <h4 class="widget-title white">about us</h4>
+                        <p class="widget__about-text">基于商城模板改造的秒杀系统示例前台。</p>
+        </div>
+      </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="widget widget__newsletter">
+                        <h4 class="widget-title white">get exclusive offers &amp; updates</h4>
+
+                        <form class="mc4wp-form">
+                            <div class="mc4wp-form-fields">
+                                <p><input type="email" placeholder="Please enter your email address"></p>
+                                <p><input type="submit" value="Subscribe"></p>
+                            </div>
+                        </form>
+
+                        <div class="socials socials--white mt-20">
+                            <a href="#" class="facebook"><i class="ui-facebook"></i></a>
+                            <a href="#" class="twitter"><i class="ui-twitter"></i></a>
+                            <a href="#" class="snapchat"><i class="ui-snapchat"></i></a>
+                            <a href="#" class="instagram"><i class="ui-instagram"></i></a>
+                            <a href="#" class="pinterest"><i class="ui-pinterest"></i></a>
+                        </div>
+      </div>
+    </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <div class="widget widget_nav_menu">
+                        <h4 class="widget-title white">help</h4>
+                        <ul>
+                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#">Returns &amp; Refunds</a></li>
+                            <li><a href="#">Private Policy</a></li>
+                            <li><a href="#">Shipping Info</a></li>
+                            <li><a href="#">FAQ</a></li>
+                        </ul>
+                    </div>
+      </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <div class="widget widget_nav_menu">
+                        <h4 class="widget-title white">information</h4>
+                        <ul>
+                            <li><a href="#">Our Stores</a></li>
+                            <li><a href="#">Careers</a></li>
+                            <li><a href="#">Delivery Info</a></li>
+                            <li><a href="#">Terms &amp; Conditions</a></li>
+                            <li><a href="#">Site Map</a></li>
+                        </ul>
+    </div>
+  </div>
+
+            </div>
+        </div>
+    </div> <!-- end container -->
+
+    <div class="footer__bottom">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 text-sm-center">
+              <span class="copyright">
+                Copyright &copy; 2018.Company name All rights reserved.
+              </span>
+                </div>
+
+                <div class="col-md-6 footer__payment-systems text-right text-sm-center mt-sml-10">
+                    <i class="ui-paypal"></i>
+                    <i class="ui-visa"></i>
+                    <i class="ui-mastercard"></i>
+                    <i class="ui-discover"></i>
+                    <i class="ui-amex"></i>
+                </div>
+            </div>
+        </div>
+    </div> <!-- end bottom footer -->
+</footer> <!-- end footer -->
+
+
+
+<!-- jQuery Scripts -->
+<script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+<script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/assets/js/easing.min.js"></script>
+<script type="text/javascript" src="/assets/js/jquery.magnific-popup.min.js"></script>
+<script type="text/javascript" src="/assets/js/owl-carousel.min.js"></script>
+<script type="text/javascript" src="/assets/js/flickity.pkgd.min.js"></script>
+<script type="text/javascript" src="/assets/js/modernizr.min.js"></script>
+<script type="text/javascript" src="/assets/js/scripts.js"></script>
+
+  <script>
+    // 简单解析 cookie，获取指定名称的值
+    function getCookie(name) {
+        const value = document.cookie;
+        if (!value) return "";
+        const parts = value.split(";");
+        for (let i = 0; i < parts.length; i++) {
+            const kv = parts[i].trim().split("=");
+            if (kv[0] === name) {
+                return decodeURIComponent(kv[1] || "");
+            }
+        }
+        return "";
+    }
+
+    // 简单封装调用后端 JSON API（会自动带上 token）
+    async function api(path, options) {
+        const token = getCookie("token");
+      const headers = Object.assign(
+            { "Content-Type": "application/json" },
+            (options && options.headers) || {}
+      );
+      if (token) {
+            headers["Authorization"] = token;
+      }
+        const res = await fetch(path, Object.assign({}, options, { headers }));
+      return res.json();
+    }
+
+    // 根据 cookie 中的 username 更新右上角登录显示
+    (function () {
+        var username = getCookie("username");
+        var userBox = document.getElementById("top-bar-user");
+        var menu = document.getElementById("top-bar-user-menu");
+        var manageLink = document.getElementById("user-manage-link");
+        var logoutBtn = document.getElementById("user-logout-btn");
+        var registerLink = document.getElementById("user-register-link");
+        var arrow = document.getElementById("top-bar-user-arrow");
+        var topLink = document.getElementById("top-bar__sign-in");
+
+        // 无论是否登录，先把模板中绑定在登录链接上的所有点击事件移除，
+        // 防止被 magnific-popup 拦截成弹窗（造成背景变暗、页面“错位”）
+        if (window.jQuery && topLink) {
+            try {
+                window.jQuery(topLink).off("click");
+            } catch (e) {
+                // 忽略卸载失败
+            }
+        }
+
+        if (!username) {
+            if (menu) {
+                menu.classList.remove("is-open");
+            }
+            if (userBox) {
+                userBox.classList.remove("is-login");
+      }
+            if (arrow) {
+                arrow.style.display = "none";
+        }
+            // 未登录状态：右上角点击直接去登录页，菜单仅展示“注册”
+            if (topLink) {
+                topLink.href = "/login";
+                // 确保点击行为是普通跳转，而不是被其它脚本接管
+                topLink.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    window.location.href = "/login";
+                });
+            }
+            if (registerLink) {
+                registerLink.style.display = "block";
+            }
+            if (manageLink) {
+                manageLink.style.display = "none";
+            }
+            if (logoutBtn) {
+                logoutBtn.style.display = "none";
+            }
+        return;
+      }
+
+        var topText = document.getElementById("top-bar-user-text");
+        if (topText) {
+            topText.textContent = "欢迎，" + username;
+        }
+        if (topLink) {
+            topLink.href = "javascript:void(0)";
+        }
+        if (userBox) {
+            userBox.classList.add("is-login");
+        }
+        if (arrow) {
+            arrow.style.display = "inline-block";
+      }
+
+        // 登录状态：隐藏“注册”，展示“管理中心 / 退出登录”
+        if (registerLink) {
+            registerLink.style.display = "none";
+        }
+        if (manageLink) {
+            manageLink.style.display = "block";
+      }
+        if (logoutBtn) {
+            logoutBtn.style.display = "block";
+        }
+
+        if (topLink && menu && userBox) {
+            // 先移除模板里通过 jQuery 绑定在登录链接上的所有点击事件，
+            // 避免被 magnific-popup 拦截后弹出 “The content could not be loaded.”
+            if (window.jQuery) {
+                try {
+                    window.jQuery(topLink).off("click");
+      } catch (e) {
+                    // 忽略卸载失败
+      }
+            }
+
+            topLink.addEventListener("click", function (event) {
+                event.preventDefault();
+                menu.classList.toggle("is-open");
+            });
+            document.addEventListener("click", function (e) {
+                if (!userBox.contains(e.target)) {
+                    menu.classList.remove("is-open");
+                }
+            });
+        }
+        // 管理中心、退出登录都使用 JS 方式跳转，避免被弹窗插件(magnific-popup)拦截成“content could not be loaded”
+        if (manageLink) {
+            manageLink.addEventListener("click", function (e) {
+                e.preventDefault();
+                if (typeof e.stopImmediatePropagation === "function") {
+                    e.stopImmediatePropagation();
+                }
+                window.location.href = "/user/manage";
+            }, true);
+        }
+        if (logoutBtn) {
+            logoutBtn.addEventListener("click", function (e) {
+                e.preventDefault();
+                if (typeof e.stopImmediatePropagation === "function") {
+                    e.stopImmediatePropagation();
+              }
+                window.location.href = "/user/logout";
+            }, true);
+        }
+
+        // 同步主导航中的“登录”菜单文字（目前首页已去掉登录入口，这里预留兼容）
+        var navLoginLinks = document.querySelectorAll('.nav__menu a[href="/login"]');
+        navLoginLinks.forEach(function (a) {
+            a.textContent = "欢迎，" + username;
+            a.href = "javascript:void(0)";
+        });
+    })();
+
+    // 动态加载商品列表，点击商品跳转到详情页
+    (function () {
+        const listEl = document.getElementById("product-list");
+        const searchForm = document.getElementById("nav-search-form");
+        const searchInput = document.getElementById("nav-search-input");
+        let currentCategory = "";
+        let currentKeyword = "";
+        if (!listEl) return;
+
+        const username = getCookie("username");
+        if (!username) {
+            listEl.innerHTML = "<div class='col-12'><p style='color:#6b7280;font-size:14px;text-align:center;padding:40px;'>请先登录后再加载在线商品列表。</p></div>";
+                return;
+              }
+
+        // 加载商品列表的函数（支持分类 + 关键字搜索）
+        function loadProducts(category, keyword) {
+            currentCategory = category || "";
+            currentKeyword = keyword || "";
+
+            let url = "/api/products";
+            const params = [];
+            if (currentCategory) {
+                params.push("category=" + encodeURIComponent(currentCategory));
+            }
+            if (currentKeyword) {
+                params.push("q=" + encodeURIComponent(currentKeyword));
+            }
+            if (params.length > 0) {
+                url += "?" + params.join("&");
+            }
+            api(url, { method: "GET" })
+            .then(function (data) {
+                if (!data || data.code !== 0) {
+                    listEl.innerHTML = "<div class='col-12'><p style='color:#dc2626;font-size:14px;text-align:center;padding:40px;'>加载商品失败：" + (data && data.msg ? data.msg : "未知错误") + "</p></div>";
+                    return;
+                }
+                const products = data.data || [];
+                if (products.length === 0) {
+                    listEl.innerHTML = "<div class='col-12'><p style='color:#6b7280;font-size:14px;text-align:center;padding:40px;'>当前没有在线商品，请先通过后台管理创建。</p></div>";
+                    return;
+                }
+
+                // 渲染商品卡片，点击后跳转到详情页
+                listEl.innerHTML = "";
+                products.forEach(function (p) {
+                    // 商品ID 1-12 直接对应图片 1-12
+                    // 商品ID 1 -> 图片1, ID 2 -> 图片2, ..., ID 12 -> 图片12
+                    let imgIndex;
+                    if (p.ID >= 1 && p.ID <= 12) {
+                        imgIndex = p.ID; // ID 1->1, 2->2, ..., 12->12
+              } else {
+                        // 对于其他ID，使用循环映射（1-12循环）
+                        imgIndex = ((p.ID - 1) % 12) + 1;
+                    }
+                    const col = document.createElement("div");
+                    col.className = "col-lg-3 col-sm-6 product";
+                    // 图片现在存储在 /assets/img/shop/{imgIndex}/ 文件夹中
+                    const imgFolder = "/assets/img/shop/" + imgIndex + "/";
+                    // 特殊处理：商品ID 6使用item_lg_1.jpg作为主图
+                    let mainImg, backImg;
+                    if (p.ID === 6) {
+                        mainImg = imgFolder + "item_lg_1.jpg";
+                        backImg = imgFolder + "item_lg_2.jpg";
+                    } else {
+                        mainImg = imgFolder + "product_" + imgIndex + ".jpg";
+                        backImg = imgFolder + "product_back_" + imgIndex + ".jpg";
+                    }
+                    col.innerHTML = [
+                        '<div class="product__img-holder">',
+                        '  <a href="/product/' + p.ID + '" class="product__link">',
+                        '    <img src="' + mainImg + '" alt="" class="product__img">',
+                        '    <img src="' + backImg + '" alt="" class="product__img-back">',
+                        "  </a>",
+                        "</div>",
+                        '<div class="product__details">',
+                        '  <h3 class="product__title"><a href="/product/' + p.ID + '">' + p.Name + "</a></h3>",
+                        "</div>",
+                        '<span class="product__price">',
+                        "  <ins>",
+                        '    <span class="amount">$' + (p.Price / 100).toFixed(2) + "</span>",
+                        "  </ins>",
+                        "</span>",
+                    ].join("");
+                    listEl.appendChild(col);
+        });
+            })
+            .catch(function (e) {
+                listEl.innerHTML = "<div class='col-12'><p style='color:#dc2626;font-size:14px;text-align:center;padding:40px;'>请求商品列表失败：" + e + "</p></div>";
+            });
+        }
+
+        // 初始加载所有商品（不传分类 / 关键字）
+        loadProducts("", "");
+
+        // 分类按钮点击事件
+        document.querySelectorAll(".category-filter").forEach(function(btn) {
+            btn.addEventListener("click", function() {
+                const category = this.getAttribute("data-category");
+                // 更新按钮激活状态
+                document.querySelectorAll(".nav__menu li").forEach(function(li) {
+                    li.classList.remove("active");
+                });
+                this.parentElement.classList.add("active");
+                // 加载对应分类的商品，保留当前关键字
+                loadProducts(category, currentKeyword);
+            });
+        });
+
+        // 顶部搜索表单提交事件
+        if (searchForm && searchInput) {
+            searchForm.addEventListener("submit", function (e) {
+                e.preventDefault();
+                const kw = searchInput.value.trim();
+                // 使用当前分类 + 新关键字重新加载
+                loadProducts(currentCategory, kw);
+            });
+        }
+    })();
+  </script>
+</body>
+</html>

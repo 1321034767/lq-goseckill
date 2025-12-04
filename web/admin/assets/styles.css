@@ -1,0 +1,266 @@
+:root {
+  --primary: #1f8ef1;
+  --sidebar-bg: #151b2c;
+  --sidebar-active: #1f8ef1;
+  --sidebar-text: #cfd3ff;
+}
+
+.admin-body {
+  font-size: 0.95rem;
+  background: #f3f5fb;
+  min-height: 100vh;
+}
+
+.admin-navbar {
+  background: linear-gradient(90deg, #151b2c, #1f8ef1);
+}
+
+.avatar-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+}
+
+.admin-layout {
+  display: flex;
+  min-height: calc(100vh - 56px);
+}
+
+.admin-sidebar {
+  width: 230px;
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+}
+
+.admin-sidebar-menu .nav-link {
+  border-radius: 0;
+  padding: 0.6rem 1rem;
+  color: var(--sidebar-text);
+  font-size: 0.9rem;
+}
+
+.admin-sidebar-menu .nav-link:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.admin-sidebar-menu .nav-link.active {
+  background: var(--sidebar-active);
+  color: #fff;
+}
+
+.admin-sidebar-title {
+  opacity: 0.7;
+}
+
+.admin-sidebar-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.78rem;
+}
+
+.admin-content {
+  flex: 1;
+  padding: 1.5rem 1.5rem 2rem;
+}
+
+.admin-right-sidebar {
+  width: 320px;
+  border-left: 1px solid #e2e6f0;
+  background: #fff;
+  display: flex;
+}
+
+.admin-chat-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.admin-chat-tabs .nav-link {
+  border-radius: 0;
+  padding: 0.5rem 0;
+}
+
+.admin-chat-tabs .nav-link.active {
+  background: #fff;
+  border-bottom: 2px solid var(--primary);
+}
+
+.admin-chat-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.admin-chat-contacts {
+  width: 45%;
+  border-right: 1px solid #edf1f7;
+  padding: 0.75rem;
+  overflow-y: auto;
+}
+
+.admin-chat-section-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #9ca3b4;
+  margin-bottom: 0.35rem;
+}
+
+.admin-chat-contact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.admin-chat-contact {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.4rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.admin-chat-contact:hover {
+  background: #f3f5fb;
+}
+
+.admin-chat-contact.active {
+  background: #e4f1ff;
+}
+
+.admin-chat-contact-name {
+  font-size: 0.85rem;
+}
+
+.admin-chat-contact-message {
+  font-size: 0.78rem;
+  color: #9ca3b4;
+}
+
+.admin-chat-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-online {
+  background: #22c55e;
+}
+
+.status-away {
+  background: #fbbf24;
+}
+
+.status-offline {
+  background: #f97373;
+}
+
+.avatar-sm {
+  width: 26px;
+  height: 26px;
+  font-size: 0.75rem;
+}
+
+.admin-chat-window {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-chat-header {
+  padding: 0.75rem 0.9rem;
+  border-bottom: 1px solid #edf1f7;
+}
+
+.admin-chat-messages {
+  flex: 1;
+  padding: 0.75rem 0.9rem;
+  overflow-y: auto;
+  background: #f8fafc;
+}
+
+.admin-chat-empty {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #9ca3b4;
+}
+
+.admin-chat-message-row {
+  display: flex;
+  margin-bottom: 0.4rem;
+}
+
+.admin-chat-message-row.self {
+  justify-content: flex-end;
+}
+
+.admin-chat-message {
+  max-width: 80%;
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.65rem;
+  font-size: 0.85rem;
+}
+
+.admin-chat-message.friend .admin-chat-message {
+  background: #fff;
+  border: 1px solid #e2e6f0;
+}
+
+.admin-chat-message-row.self .admin-chat-message {
+  background: var(--primary);
+  color: #fff;
+}
+
+.admin-chat-input {
+  padding: 0.4rem 0.7rem;
+  border-top: 1px solid #edf1f7;
+  background: #fff;
+}
+
+#toast {
+  position: sticky;
+  top: 0.5rem;
+  z-index: 99;
+}
+
+table th {
+  white-space: nowrap;
+}
+
+.admin-section-card {
+  border-radius: 0.75rem;
+  border: none;
+}
+
+.admin-section-card .card-header {
+  background: #fff;
+  border-bottom-color: #edf1f7;
+}
+
+.admin-stat-card {
+  border-radius: 0.9rem;
+}
+
+.admin-stat-card .display-6 {
+  font-size: 1.8rem;
+}
+
+@media (max-width: 991.98px) {
+  .admin-layout {
+    flex-direction: column;
+  }
+
+  .admin-sidebar {
+    width: 100%;
+  }
+
+  .admin-right-sidebar {
+    display: none !important;
+  }
+}

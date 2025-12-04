@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>用户中心</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background: #f5f7fb;
+        }
+        .panel {
+            max-width: 640px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 12px 30px rgba(15,23,42,0.08);
+            padding: 32px;
+        }
+        h1 {
+            margin-top: 0;
+        }
+        .actions {
+            margin-top: 24px;
+        }
+        .actions a,
+        .actions button {
+            display: inline-block;
+            margin-right: 12px;
+            padding: 10px 18px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .actions a {
+            background: #4f46e5;
+            color: #fff;
+            text-decoration: none;
+        }
+        .actions button {
+            background: #e11d48;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+<div class="panel">
+    <h1>用户中心</h1>
+    <p>这里是简单的占位页，你可以在此扩展更多管理功能。</p>
+    <div class="actions">
+        <a href="/">返回首页</a>
+        <button onclick="window.location.href='/user/logout'">退出登录</button>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<div style="text-align: center;font-size: 24px;padding: 40px 0;min-height: 400px;">
+    <div style="margin-bottom: 20px;">
+        {{.showMessage}}
+    </div>
+    {{if .orderID}}
+    <div style="margin-top: 12px;font-size: 18px;color: #666;">
+        {{.orderID}}
+    </div>
+    {{end}}
+    <div style="margin-top: 30px;font-size: 16px;color: #999;">
+        <p>如果您是管理员，可以通过以下方式添加商品：</p>
+        <ol style="text-align: left;display: inline-block;margin-top: 20px;">
+            <li style="margin: 10px 0;">启动后台管理服务器：<code>go run ./cmd/admin</code></li>
+            <li style="margin: 10px 0;">运行批量添加商品脚本：<code>go run ./cmd/add-products/main.go</code></li>
+        </ol>
+    </div>
+    <div style="margin-top: 30px;">
+        <a href="/" style="display: inline-block;padding: 10px 20px;background: #ec2424;color: white;text-decoration: none;border-radius: 4px;">返回首页</a>
+    </div>
+    <footer style="margin-top: 40px;font-size: 14px;color: #999;">
+        <h3>异常错误处理页面</h3>
+    </footer>
+</div>

@@ -1,0 +1,406 @@
+<!-- 商品详情页内容，基于 GoSecKill-main 模板适配本项目字段 -->
+<!-- Single Product -->
+<section class="section-wrap pb-20 product-single">
+    <div class="container">
+
+        <!-- Breadcrumbs -->
+        <ol class="breadcrumbs">
+            <li>
+                <a href="/">首页</a>
+            </li>
+            <li class="active">
+                {{.category_label}}
+            </li>
+        </ol>
+
+        <div class="row">
+
+            <div class="col-md-6 product-slider mb-50">
+
+                <div class="flickity flickity-slider-wrap mfp-hover" id="gallery-main">
+                    {{range $index, $imgPath := .images.lg}}
+                    <div class="gallery-cell">
+                        <a href="{{$imgPath}}" class="lightbox-img">
+                            <img src="{{$imgPath}}" alt=""/>
+                        </a>
+                    </div>
+                    {{end}}
+                </div> <!-- end gallery main -->
+
+                <div class="gallery-thumbs" id="gallery-thumbs">
+                    {{range $index, $imgPath := .images.thumb}}
+                    <div class="gallery-cell">
+                        <img src="{{$imgPath}}" alt=""/>
+                    </div>
+                    {{end}}
+                </div> <!-- end gallery thumbs -->
+
+            </div> <!-- end col img slider -->
+
+            <div class="col-md-6 product-single">
+                <h1 class="product-single__title uppercase">{{.product.Name}}</h1>
+
+                <div class="rating">
+                    <a href="#">101 Reviews</a>
+                </div>
+
+                <span class="product-single__price">
+              <ins>
+                <span class="amount">{{formatPrice .product.Price}}</span>
+              </ins>
+            </span>
+
+                <form action="/product/get" method="post" id="productFrom">
+                    <div class="colors clearfix">
+                        <span class="colors__label">Color: <span
+                                class="colors__label-selected">Fadaed Blue</span></span>
+                        <input name="color" id="color" value="Fadaed Blue" type="hidden">
+                        <a href="#" class="colors__item colors__item--selected blue"></a>
+                    </div>
+
+                    <div class="size-quantity clearfix" style="margin-top:10px;">
+                        <div class="quantity">
+                            <label>库存：</label>{{.product.Stock}}　<label style="margin-left:8px;">秒杀库存：</label>{{.product.SeckillStock}}
+                        </div>
+                    </div>
+
+                    {{if .product.Description}}
+                    <p style="font-size:14px;color:#4b5563;margin:10px 0;">{{.product.Description}}</p>
+                    {{end}}
+
+                    <div class="row row-10 product-single__actions clearfix" style="margin-top:10px;">
+                        <div class="col">
+                            <button id="detail-seckill-btn" class="btn btn-lg btn-color product-single__add-to-cart">立即秒杀</button>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="product_meta">
+                    <ul>
+                        <li>
+                            <span class="product-code">Product Code: <span>111763</span></span>
+                        </li>
+                        <li>
+                            <span class="product-material">Material: <span>Cotton 100%</span></span>
+                        </li>
+                        <li>
+                            <span class="product-country">Country: <span>Made in Canada</span></span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Accordion -->
+                <div class="accordion mb-50" id="accordion">
+                    <div class="accordion__panel">
+                        <div class="accordion__heading" id="headingOne">
+                            <a data-toggle="collapse" href="#collapseOne" class="accordion__link accordion--is-open"
+                               aria-expanded="true" aria-controls="collapseOne">Description<span
+                                    class="accordion__toggle">&nbsp;</span>
+                            </a>
+                        </div>
+                        <div id="collapseOne" class="collapse show" data-parent="#accordion" role="tabpanel"
+                             aria-labelledby="headingOne">
+                            <div class="accordion__body">
+                                a very slick and clean e-commerce template with endless possibilities.
+                                Creating an awesome clothes store with this Theme is easy than you can imagine.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion__panel">
+                        <div class="accordion__heading" id="headingTwo">
+                            <a data-toggle="collapse" href="#collapseTwo" class="accordion__link accordion--is-closed"
+                               aria-expanded="false" aria-controls="collapseTwo">Information<span
+                                    class="accordion__toggle">&nbsp;</span>
+                            </a>
+                        </div>
+                        <div id="collapseTwo" class="collapse" data-parent="#accordion" role="tabpanel"
+                             aria-labelledby="headingTwo">
+                            <div class="accordion__body">
+                                <table class="table shop_attributes">
+                                    <tbody>
+                                    <tr>
+                                        <th>Size:</th>
+                                        <td>EU 41 (US 8), EU 42 (US 9), EU 43 (US 10), EU 45 (US 12)</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Colors:</th>
+                                        <td>Violet, Black, Blue</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Fabric:</th>
+                                        <td>Cotton (100%)</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion__panel">
+                        <div class="accordion__heading" id="headingThree">
+                            <a data-toggle="collapse" href="#collapseThree" class="accordion__link accordion--is-closed"
+                               aria-expanded="false" aria-controls="collapseThree">Reviews<span
+                                    class="accordion__toggle">&nbsp;</span>
+                            </a>
+                        </div>
+                        <div id="collapseThree" class="collapse" data-parent="#accordion" role="tabpanel"
+                             aria-labelledby="headingThree">
+                            <div class="accordion__body">
+                                <div class="reviews">
+                                    <ul class="reviews__list">
+                                        <li class="reviews__list-item">
+                                            <div class="reviews__body">
+                                                <div class="reviews__content">
+                                                    <p class="reviews__author"><strong>Alexander Samokhin</strong> - May
+                                                        6, 2017 at 12:48 pm</p>
+                                                    <div class="rating">
+                                                        <a href="#"></a>
+                                                    </div>
+                                                    <p>This template is so awesome. I didn’t expect so many features
+                                                        inside. E-commerce pages are very useful, you can launch your
+                                                        online store in few seconds. I will rate 5 stars.</p>
+                                                </div>
+                                            </div>
+                                        </li>
+
+                                        <li class="reviews__list-item">
+                                            <div class="reviews__body">
+                                                <div class="reviews__content">
+                                                    <p class="reviews__author"><strong>Christopher Robins</strong> - May
+                                                        7, 2014 at 12:48 pm</p>
+                                                    <div class="rating">
+                                                        <a href="#"></a>
+                                                    </div>
+                                                    <p>This template is so awesome. I didn’t expect so many features
+                                                        inside. E-commerce pages are very useful, you can launch your
+                                                        online store in few seconds. I will rate 5 stars.</p>
+                                                </div>
+                                            </div>
+                                        </li>
+
+                                    </ul>
+                                </div> <!--  end reviews -->
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- end accordion -->
+
+            </div> <!-- end col product description -->
+        </div> <!-- end row -->
+
+    </div> <!-- end container -->
+</section> <!-- end single product -->
+
+
+<!-- Related Products -->
+<section class="section-wrap pt-0 pb-40">
+    <div class="container">
+        <div class="heading-row">
+            <div class="text-center">
+                <h2 class="heading bottom-line">
+                    Shop the look
+                </h2>
+            </div>
+        </div>
+
+        <!-- 使用 Flickity 轮播展示所有关联商品（左右箭头可切换） -->
+        <!-- 一屏固定显示 6 个商品 -->
+        <style>
+            #related-products .related-product-cell {
+                width: 16.66%; /* 6 个一排 */
+                padding: 0 8px;
+                box-sizing: border-box;
+            }
+            @media (max-width: 992px) {
+                #related-products .related-product-cell {
+                    width: 33.33%; /* 平板：一排 3 个 */
+                }
+            }
+            @media (max-width: 576px) {
+                #related-products .related-product-cell {
+                    width: 80%;    /* 手机：单个居中滑动 */
+                }
+            }
+        </style>
+        <div class="flickity flickity-slider-wrap" id="related-products">
+
+            {{range .related_cards}}
+            <div class="related-product-cell product">
+                <div class="product__img-holder">
+                    <a href="/product/{{.Product.ID}}" class="product__link">
+                        <img src="{{.MainImg}}" alt="" class="product__img">
+                        <img src="{{.BackImg}}" alt="" class="product__img-back">
+                    </a>
+                </div>
+
+                <div class="product__details">
+                    <h3 class="product__title">
+                        <a href="/product/{{.Product.ID}}">{{.Product.Name}}</a>
+                    </h3>
+                </div>
+
+                <span class="product__price">
+              <ins>
+                <span class="amount">{{formatPrice .Product.Price}}</span>
+              </ins>
+            </span>
+            </div> <!-- end product -->
+            {{end}}
+
+        </div> <!-- end related-products slider -->
+    </div> <!-- end container -->
+</section> <!-- end related products -->
+
+<script>
+    // 获取 cookie 的工具函数
+    function getCookie(name) {
+        const value = "; " + document.cookie;
+        const parts = value.split("; " + name + "=");
+        if (parts.length === 2) return parts.pop().split(";").shift();
+        return null;
+    }
+
+    // 简单封装调用后端 JSON API（会自动带上 token）
+    async function api(path, options) {
+        const token = getCookie("token");
+        const headers = Object.assign(
+            { "Content-Type": "application/json" },
+            (options && options.headers) || {}
+        );
+        if (token) {
+            headers["Authorization"] = token;
+        }
+        const res = await fetch(path, Object.assign({}, options, { headers }));
+        return res.json();
+    }
+
+    // 确保图片轮播正确初始化（详情主图 + Shop the look）
+    (function() {
+        // 等待DOM和jQuery加载完成
+        function initProductCarousels() {
+            if (typeof window.jQuery === 'undefined' || typeof window.jQuery.fn.flickity === 'undefined') {
+                setTimeout(initProductCarousels, 100);
+                return;
+            }
+
+            var $main = window.jQuery('#gallery-main');
+            var $thumbs = window.jQuery('#gallery-thumbs');
+            var $related = window.jQuery('#related-products');
+
+            // ---------- 商品详情主图 ----------
+            if ($main.length && $thumbs.length) {
+                // 如果已经初始化过，先销毁
+                try {
+                    if ($main.data('flickity')) {
+                        $main.flickity('destroy');
+                    }
+                    if ($thumbs.data('flickity')) {
+                        $thumbs.flickity('destroy');
+                    }
+                } catch (e) {
+                    // 忽略错误
+                }
+
+                // 初始化主图轮播
+                $main.flickity({
+                    cellAlign: 'center',
+                    contain: true,
+                    wrapAround: true,
+                    autoPlay: false,
+                    prevNextButtons: true,
+                    percentPosition: true,
+                    imagesLoaded: true,
+                    lazyLoad: 1,
+                    pageDots: false,
+                    selectedAttraction: 0.1,
+                    friction: 0.6,
+                    rightToLeft: false,
+                    arrowShape: 'M 25,50 L 65,90 L 70,90 L 30,50  L 70,10 L 65,10 Z'
+                });
+
+                // 初始化缩略图轮播
+                $thumbs.flickity({
+                    asNavFor: '#gallery-main',
+                    contain: true,
+                    cellAlign: 'left',
+                    wrapAround: false,
+                    autoPlay: false,
+                    prevNextButtons: false,
+                    percentPosition: true,
+                    imagesLoaded: true,
+                    pageDots: false,
+                    selectedAttraction: 0.1,
+                    friction: 0.6,
+                    rightToLeft: false
+                });
+            }
+
+            // ---------- Shop the look 关联商品轮播 ----------
+            if ($related.length) {
+                // 如果已经初始化过，先销毁
+                try {
+                    if ($related.data('flickity')) {
+                        $related.flickity('destroy');
+                    }
+                } catch (e) {
+                    // 忽略错误
+                }
+
+                $related.flickity({
+                    cellSelector: '.related-product-cell',
+                    cellAlign: 'left',
+                    contain: true,
+                    groupCells: 6,        // 一组显示 6 个
+                    wrapAround: true,
+                    autoPlay: false,
+                    prevNextButtons: true,  // 左右箭头
+                    percentPosition: true,
+                    imagesLoaded: true,
+                    pageDots: false,
+                    selectedAttraction: 0.1,
+                    friction: 0.6,
+                    rightToLeft: false
+                });
+            }
+        }
+
+        // 页面加载完成后初始化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initProductCarousels);
+        } else {
+            initProductCarousels();
+        }
+    })();
+
+    // 秒杀按钮事件处理
+    (function() {
+        const seckillBtn = document.getElementById("detail-seckill-btn");
+        if (!seckillBtn) return;
+
+        const productId = {{.product.ID}};
+
+        seckillBtn.addEventListener("click", function() {
+            // 先获取 path，再发起秒杀
+            api("/api/seckill/" + productId + "/path", { method: "GET" })
+                .then(function (pathRes) {
+                    if (!pathRes || pathRes.code !== 0 || !pathRes.data || !pathRes.data.path) {
+                        alert("获取秒杀地址失败：" + (pathRes && pathRes.msg ? pathRes.msg : "未知错误"));
+                        return;
+                    }
+                    return api("/api/seckill/" + productId + "/" + pathRes.data.path, { method: "POST" });
+                })
+                .then(function (killRes) {
+                    if (!killRes) return;
+                    if (killRes.code === 0) {
+                        alert("秒杀请求成功，已进入队列：" + (killRes.msg || "ok"));
+                    } else {
+                        alert("秒杀失败：" + (killRes.msg || "未知错误"));
+                    }
+                })
+                .catch(function (e) {
+                    alert("请求异常：" + e);
+                });
+        });
+    })();
+</script>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GoSecKill 管理后台</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+
+<body class="admin-body">
+  <!-- 顶部导航，风格参考 copy 中 layout.html -->
+  <nav class="navbar navbar-expand-lg navbar-dark admin-navbar shadow-sm">
+    <div class="container-fluid">
+      <a href="#" class="navbar-brand fw-semibold">
+        GoSecKill Backend
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topbarMenu"
+        aria-controls="topbarMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="topbarMenu">
+        <ul class="navbar-nav align-items-center gap-2 small">
+          <li class="nav-item text-white-50 d-none d-md-block">
+            秒杀数据监控 · 商品 / 订单管理
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" role="button"
+              data-bs-toggle="dropdown">
+              <span class="avatar-circle">A</span>
+              <span class="d-none d-sm-inline">Admin</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><h6 class="dropdown-header">账户</h6></li>
+              <li><a class="dropdown-item" href="#">设置</a></li>
+              <li><a class="dropdown-item" href="#">退出</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="admin-layout">
+    <!-- 左侧菜单栏，参考 copy 中 sidebar 结构 -->
+    <aside class="admin-sidebar d-flex flex-column">
+      <div class="admin-sidebar-header text-uppercase small text-muted px-3 pt-3 pb-2">
+        菜单
+      </div>
+      <ul class="nav nav-pills flex-column mb-auto admin-sidebar-menu">
+        <li class="nav-item">
+          <a href="#" class="nav-link active">
+            <span class="icon-placeholder me-2">📊</span> Dashboard
+          </a>
+        </li>
+        <li class="nav-item mt-2">
+          <div class="admin-sidebar-title small text-muted px-3 mb-1">商品管理</div>
+          <a href="#product-section" class="nav-link">
+            <span class="icon-placeholder me-2">🛒</span> 商品列表 / 编辑
+          </a>
+        </li>
+        <li class="nav-item mt-2">
+          <div class="admin-sidebar-title small text-muted px-3 mb-1">订单管理</div>
+          <a href="#order-section" class="nav-link">
+            <span class="icon-placeholder me-2">📦</span> 最新订单
+          </a>
+        </li>
+      </ul>
+      <div class="admin-sidebar-footer small text-muted px-3 pb-3 mt-auto">
+        GoSecKill Admin · 简版控制台
+      </div>
+    </aside>
+
+    <!-- 中间内容区 -->
+    <main class="admin-content">
+      <div id="toast" class="alert d-none" role="alert"></div>
+
+      <!-- 概览卡片，模仿后台 Dashboard 风格 -->
+      <section class="admin-stats-row row g-3 mb-3">
+        <div class="col-md-4">
+          <div class="card shadow-sm border-0 admin-stat-card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted small text-uppercase">在线商品</span>
+                <span class="badge bg-success-subtle text-success border border-success-subtle">实时</span>
+              </div>
+              <div class="display-6 fw-semibold" id="stat-products">—</div>
+              <div class="text-muted small">基于商品列表实时统计</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card shadow-sm border-0 admin-stat-card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted small text-uppercase">秒杀库存总量</span>
+                <span class="badge bg-info-subtle text-info border border-info-subtle">队列前</span>
+              </div>
+              <div class="display-6 fw-semibold" id="stat-seckill-stock">—</div>
+              <div class="text-muted small">仅统计当前配置的秒杀库存</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card shadow-sm border-0 admin-stat-card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted small text-uppercase">最近订单</span>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">近 20 条</span>
+              </div>
+              <div class="display-6 fw-semibold" id="stat-orders">—</div>
+              <div class="text-muted small">从订单列表实时统计</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 商品列表 -->
+      <section id="product-section" class="card shadow-sm mb-4 admin-section-card">
+        <div class="card-header d-flex flex-wrap align-items-center gap-2">
+          <div>
+            <h5 class="mb-0">商品列表</h5>
+            <small class="text-muted">支持查看、编辑商品基础信息与秒杀参数</small>
+          </div>
+          <div class="ms-auto d-flex gap-2">
+            <button id="refresh-products" class="btn btn-outline-secondary btn-sm">刷新</button>
+            <button id="reset-form" class="btn btn-primary btn-sm">新建商品</button>
+          </div>
+        </div>
+        <div class="card-body table-responsive">
+          <table class="table table-striped table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>ID</th>
+                <th>名称</th>
+                <th>价格（元）</th>
+                <th>库存</th>
+                <th>秒杀库存</th>
+                <th>状态</th>
+                <th>开始时间</th>
+                <th>结束时间</th>
+                <th class="text-center">操作</th>
+              </tr>
+            </thead>
+            <tbody id="product-table">
+              <tr>
+                <td colspan="9" class="text-center text-muted">正在加载...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 商品表单 -->
+      <section class="card shadow-sm mb-4 admin-section-card">
+        <div class="card-header">
+          <h5 class="mb-0"><span id="form-title">新建商品</span></h5>
+        </div>
+        <div class="card-body">
+          <form id="product-form" class="row g-3">
+            <div class="col-md-6">
+              <label for="name" class="form-label">名称</label>
+              <input type="text" id="name" class="form-control" required />
+            </div>
+            <div class="col-md-6">
+              <label for="price" class="form-label">价格（元）</label>
+              <input type="number" id="price" class="form-control" min="0" step="0.01" required />
+            </div>
+            <div class="col-md-12">
+              <label for="description" class="form-label">描述</label>
+              <textarea id="description" rows="2" class="form-control"></textarea>
+            </div>
+            <div class="col-md-4">
+              <label for="stock" class="form-label">库存</label>
+              <input type="number" id="stock" class="form-control" min="0" required />
+            </div>
+            <div class="col-md-4">
+              <label for="seckillStock" class="form-label">秒杀库存</label>
+              <input type="number" id="seckillStock" class="form-control" min="0" required />
+            </div>
+            <div class="col-md-4">
+              <label for="status" class="form-label">状态</label>
+              <select id="status" class="form-select">
+                <option value="0">下线</option>
+                <option value="1" selected>正常</option>
+                <option value="2">秒杀中</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="startTime" class="form-label">开始时间</label>
+              <input type="datetime-local" id="startTime" class="form-control" required />
+            </div>
+            <div class="col-md-6">
+              <label for="endTime" class="form-label">结束时间</label>
+              <input type="datetime-local" id="endTime" class="form-control" required />
+            </div>
+            <div class="col-12 d-flex gap-2">
+              <button type="submit" class="btn btn-primary">保存</button>
+              <button type="button" id="cancel-edit" class="btn btn-outline-secondary d-none">取消编辑</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- 订单列表 -->
+      <section id="order-section" class="card shadow-sm admin-section-card">
+        <div class="card-header d-flex align-items-center gap-2">
+          <div>
+            <h5 class="mb-0">最新订单</h5>
+            <small class="text-muted">展示最近 20 条订单，用于观察抢购情况</small>
+          </div>
+          <button id="refresh-orders" class="btn btn-outline-secondary btn-sm ms-auto">刷新</button>
+        </div>
+        <div class="card-body table-responsive">
+          <table class="table table-striped table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>ID</th>
+                <th>用户ID</th>
+                <th>商品ID</th>
+                <th>价格（元）</th>
+                <th>状态</th>
+                <th>创建时间</th>
+              </tr>
+            </thead>
+            <tbody id="order-table">
+              <tr>
+                <td colspan="6" class="text-center text-muted">正在加载...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/assets/app.js" type="module"></script>
+</body>
+
+</html>

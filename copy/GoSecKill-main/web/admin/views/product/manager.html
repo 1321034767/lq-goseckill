@@ -1,0 +1,73 @@
+<div class="page-head">
+    <h2 class="page-head-title">Product Manager</h2>
+
+</div>
+
+<div class="main-content container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default panel-border-color panel-border-color-primary">
+                <div class="panel-heading panel-heading-divider">Product Detail<span class="panel-subtitle">Can Edit Product Detail</span>
+                </div>
+                <div class="panel-body">
+                    <form action="/product/update" style="border-radius: 0;" class="form-horizontal group-border-dashed"
+                          method="post">
+                        <label>
+                            <input type="text" name="ID" value="{{.product.ID}}" hidden>
+                        </label>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Product Name</label>
+                            <div class="col-sm-6">
+                                <label>
+                                    <input type="text" class="form-control" name="Name" value="{{.product.Name}}">
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Product Price</label>
+                            <div class="col-sm-6">
+                                <label>
+                                    <input type="text" class="form-control" name="Price" value="{{.product.Price}}">
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Product Stock</label>
+                            <div class="col-sm-6">
+                                <label>
+                                    <input type="text" class="form-control" name="Stock" value="{{.product.Stock}}">
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Product ImgPath</label>
+                            <div class="col-sm-6">
+                                <label>
+                                    <input type="text" class="form-control" name="ImgPath" value="{{.product.ImgPath}}">
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Product Detail</label>
+                            <div class="col-sm-6">
+                                <label>
+                                    <input type="text" class="form-control" name="Detail" value="{{.product.Detail}}">
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row xs-pt-15">
+                            <div class="col-xs-6">
+                                <p class="text-right">
+                                    <button type="submit" class="btn btn-space btn-primary">Edit</button>
+                                    <button class="btn btn-space btn-default" type="reset">Reset</button>
+                                </p>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

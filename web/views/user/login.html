@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <title>账号登录 - Go 秒杀商城</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/assets/css/style.css" />
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: radial-gradient(circle at top, #111827 0, #020617 45%, #000 100%);
+            color: #111827;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-shell {
+            width: 100%;
+            max-width: 420px;
+            padding: 24px 16px;
+        }
+        .login-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 28px 24px 22px;
+            box-shadow: 0 20px 45px rgba(15, 23, 42, .35);
+        }
+        .login-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            text-align: center;
+        }
+        .login-subtitle {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+        label {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 4px;
+            color: #4b5563;
+        }
+        .login-input {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 999px;
+            border: 1px solid #d1d5db;
+            font-size: 14px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color .15s ease, box-shadow .15s ease;
+        }
+        .login-input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 1px rgba(37, 99, 235, .3);
+        }
+        .login-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .login-btn {
+            padding: 8px 18px;
+            border-radius: 999px;
+            border: none;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 12px 30px rgba(37, 99, 235, .45);
+        }
+        .login-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 16px 35px rgba(37, 99, 235, .55);
+        }
+        .login-btn:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+        .login-link {
+            font-size: 13px;
+            color: #2563eb;
+            text-decoration: none;
+        }
+        .login-link:hover {
+            text-decoration: underline;
+        }
+        .back-home {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 12px;
+        }
+        .back-home a {
+            color: #6b7280;
+            text-decoration: none;
+        }
+        .back-home a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="login-shell">
+    <div class="login-card">
+        <div class="login-title">账号登录</div>
+        <div class="login-subtitle">使用在 Go 秒杀商城中注册的账号登录</div>
+
+        <form action="/user/login" method="post">
+            <div style="margin-bottom: 12px;">
+                <label for="username">用户名</label>
+                <input class="login-input" type="text" id="username" name="username" minlength="4" maxlength="10" required />
+            </div>
+            <div style="margin-bottom: 4px;">
+                <label for="password">密码</label>
+                <input class="login-input" type="password" id="password" name="password" minlength="8" maxlength="16" required />
+            </div>
+            <div class="login-actions">
+                <a href="/register" class="login-link">没有账号？去注册</a>
+                <button type="submit" class="login-btn">登录</button>
+            </div>
+        </form>
+
+        <div class="back-home">
+            <a href="/">← 返回首页</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>
