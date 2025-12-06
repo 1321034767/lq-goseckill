@@ -36,3 +36,13 @@ func (r *userRepo) GetByUsername(ctx context.Context, username string) (*user.Us
 func (r *userRepo) Create(ctx context.Context, u *user.User) error {
 	return r.db.WithContext(ctx).Create(u).Error
 }
+
+func (r *userRepo) ListAll(ctx context.Context) ([]*user.User, error) {
+	var list []*user.User
+	if err := r.db.WithContext(ctx).
+		Order("id DESC").
+		Find(&list).Error; err != nil {
+		return nil, err
+	}
+	return list, nil
+}

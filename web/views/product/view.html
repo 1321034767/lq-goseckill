@@ -44,10 +44,13 @@
                     <a href="#">101 Reviews</a>
                 </div>
 
-                <span class="product-single__price">
+                <span class="product-single__price" id="price-block">
               <ins>
-                <span class="amount">{{formatPrice .product.Price}}</span>
+                        <span class="amount" id="price-current">{{formatPrice .product.Price}}</span>
               </ins>
+                    <del id="price-original" style="margin-left:6px;color:#9ca3af;display:none;">
+                        {{formatPrice .product.Price}}
+                    </del>
             </span>
 
                 <form action="/product/get" method="post" id="productFrom">
@@ -60,7 +63,7 @@
 
                     <div class="size-quantity clearfix" style="margin-top:10px;">
                         <div class="quantity">
-                            <label>库存：</label>{{.product.Stock}}　<label style="margin-left:8px;">秒杀库存：</label>{{.product.SeckillStock}}
+                            <label>库存：</label><span id="stock-normal">{{.product.Stock}}</span>　<label style="margin-left:8px;">秒杀库存：</label><span id="stock-seckill">{{.product.SeckillStock}}</span>
                         </div>
                     </div>
 
@@ -70,7 +73,7 @@
 
                     <div class="row row-10 product-single__actions clearfix" style="margin-top:10px;">
                         <div class="col">
-                            <button id="detail-seckill-btn" class="btn btn-lg btn-color product-single__add-to-cart">立即秒杀</button>
+                            <button id="detail-seckill-btn" type="button" class="btn btn-lg btn-color product-single__add-to-cart">立即秒杀</button>
                         </div>
                     </div>
                 </form>
@@ -373,15 +376,99 @@
         }
     })();
 
-    // 秒杀按钮事件处理
+    // 秒杀按钮事件处理 + 价格展示（折扣价+原价划线）
     (function() {
         const seckillBtn = document.getElementById("detail-seckill-btn");
+        const priceCurrentEl = document.getElementById("price-current");
+        const priceOriginalEl = document.getElementById("price-original");
+        const stockNormalEl = document.getElementById("stock-normal");
+        const stockSeckillEl = document.getElementById("stock-seckill");
+        const basePriceCents = {{.product.Price}};
         if (!seckillBtn) return;
 
         const productId = {{.product.ID}};
+        let isSeckillActive = false;
+
+        function formatUSD(cents) {
+            return "$" + (cents / 100).toFixed(2);
+        }
+
+        function setButtonMode(active) {
+            isSeckillActive = !!active;
+            seckillBtn.textContent = active ? "立即秒杀" : "立即购买";
+            seckillBtn.dataset.mode = active ? "seckill" : "purchase";
+        }
+
+        function updateSeckillStock() {
+            if (!stockSeckillEl) return;
+            api("/api/products/" + productId + "/seckill-stock", { method: "GET" })
+                .then(function(res) {
+                    if (res && res.code === 0 && res.data && typeof res.data.stock !== "undefined") {
+                        stockSeckillEl.textContent = res.data.stock;
+                    }
+                })
+                .catch(function(err) {
+                    console.warn("更新秒杀库存失败：", err);
+                });
+        }
+
+        function updatePriceWithActivity() {
+            api("/api/products/" + productId + "/activity", { method: "GET" })
+                .then(function(res) {
+                    if (!res || res.code !== 0 || !res.data) {
+                        throw new Error(res && res.msg ? res.msg : "活动信息获取失败");
+                    }
+                    const data = res.data;
+                    if (data.is_active && data.discount && data.discount > 0 && data.discount <= 1) {
+                        const discountPrice = Math.round(basePriceCents * data.discount);
+                        if (priceCurrentEl) {
+                            priceCurrentEl.textContent = formatUSD(discountPrice);
+                            priceCurrentEl.style.color = "#dc3545";
+                            priceCurrentEl.style.fontWeight = "700";
+                        }
+                        if (priceOriginalEl) {
+                            priceOriginalEl.textContent = formatUSD(basePriceCents);
+                            priceOriginalEl.style.display = "inline";
+                        }
+                        setButtonMode(true);
+                    } else {
+                        if (priceCurrentEl) {
+                            priceCurrentEl.textContent = formatUSD(basePriceCents);
+                            priceCurrentEl.style.color = "";
+                            priceCurrentEl.style.fontWeight = "";
+                        }
+                        if (priceOriginalEl) {
+                            priceOriginalEl.style.display = "none";
+                        }
+                        setButtonMode(false);
+                    }
+                })
+                .catch(function(err) {
+                    // 价格回退为原价，按钮回退普通购买
+                    if (priceCurrentEl) {
+                        priceCurrentEl.textContent = formatUSD(basePriceCents);
+                        priceCurrentEl.style.color = "";
+                        priceCurrentEl.style.fontWeight = "";
+                    }
+                    if (priceOriginalEl) {
+                        priceOriginalEl.style.display = "none";
+                    }
+                    setButtonMode(false);
+                    console.warn("获取活动信息失败：", err);
+                });
+        }
+
+        // 初始化展示
+        updatePriceWithActivity();
+        updateSeckillStock();
+        // 2秒轮询一次，保证活动状态/折扣变化时价格及时更新
+        setInterval(updatePriceWithActivity, 2000);
+        // 1秒轮询秒杀库存，确保扣减后及时更新
+        setInterval(updateSeckillStock, 1000);
 
         seckillBtn.addEventListener("click", function() {
-            // 先获取 path，再发起秒杀
+            // 根据当前模式执行：秒杀 or 普通购买
+            if (seckillBtn.dataset.mode === "seckill") {
             api("/api/seckill/" + productId + "/path", { method: "GET" })
                 .then(function (pathRes) {
                     if (!pathRes || pathRes.code !== 0 || !pathRes.data || !pathRes.data.path) {
@@ -401,6 +488,26 @@
                 .catch(function (e) {
                     alert("请求异常：" + e);
                 });
+            } else {
+                api("/api/purchase", {
+                    method: "POST",
+                    body: JSON.stringify({ product_id: productId, quantity: 1 })
+                }).then(function (res) {
+                    if (!res || res.code !== 0) {
+                        throw new Error(res && res.msg ? res.msg : "购买失败");
+                    }
+                    alert("购买成功，订单号：" + res.data.order_id);
+                    // 前端快速扣减库存显示
+                    if (stockNormalEl) {
+                        const cur = parseInt(stockNormalEl.textContent || "0", 10);
+                        if (!isNaN(cur)) {
+                            stockNormalEl.textContent = Math.max(0, cur - 1);
+                        }
+                    }
+                }).catch(function (err) {
+                    alert("购买失败：" + err);
+                });
+            }
         });
     })();
 </script>

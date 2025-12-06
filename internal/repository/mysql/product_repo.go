@@ -37,8 +37,10 @@ func (r *productRepo) ListAll(ctx context.Context) ([]*product.Product, error) {
 
 func (r *productRepo) ListOnline(ctx context.Context) ([]*product.Product, error) {
 	var list []*product.Product
+	// 查询状态为1（正常）或2（秒杀中）的商品，因为秒杀中的商品也应该在首页显示
 	if err := r.db.WithContext(ctx).
-		Where("status = ?", 1).
+		Where("status IN ?", []int{1, 2}).
+		Order("id ASC").
 		Find(&list).Error; err != nil {
 		return nil, err
 	}
@@ -47,12 +49,13 @@ func (r *productRepo) ListOnline(ctx context.Context) ([]*product.Product, error
 
 func (r *productRepo) ListByCategory(ctx context.Context, category string) ([]*product.Product, error) {
 	var list []*product.Product
-	query := r.db.WithContext(ctx).Where("status = ?", 1)
+	// 查询状态为1（正常）或2（秒杀中）的商品
+	query := r.db.WithContext(ctx).Where("status IN ?", []int{1, 2})
 	if category != "" && category != "all" {
 		// 查询指定分类的商品，category字段必须匹配
 		query = query.Where("category = ?", category)
 	}
-	if err := query.Order("id DESC").Find(&list).Error; err != nil {
+	if err := query.Order("id ASC").Find(&list).Error; err != nil {
 		return nil, err
 	}
 	return list, nil

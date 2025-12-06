@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人作品集 - 高并发秒杀系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #3b82f6;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-light: #f9fafb;
+            --bg-white: #ffffff;
+            --border-color: #e5e7eb;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-light);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 80px 0 60px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--bg-white);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            padding: 15px 0;
+        }
+
+        nav li {
+            margin: 0 20px;
+        }
+
+        nav a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Section */
+        section {
+            padding: 60px 0;
+        }
+
+        section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-align: center;
+            color: var(--text-primary);
+        }
+
+        /* About Section */
+        .about {
+            background: var(--bg-white);
+        }
+
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* Project Section */
+        .project {
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .project:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .project-title {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .project-tag {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+
+        .project-description {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+
+        .tech-stack {
+            margin: 30px 0;
+        }
+
+        .tech-stack h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        .tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tech-tag {
+            background: var(--bg-light);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .features {
+            margin: 30px 0;
+        }
+
+        .features h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-list li {
+            padding: 12px 0;
+            padding-left: 30px;
+            position: relative;
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+        }
+
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .highlights {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            padding: 30px;
+            border-radius: 8px;
+            margin: 30px 0;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .highlights h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .highlights ul {
+            list-style: none;
+        }
+
+        .highlights li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            color: var(--text-primary);
+        }
+
+        .highlights li:before {
+            content: "🚀";
+            position: absolute;
+            left: 0;
+        }
+
+        .project-links {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-light);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        /* Architecture Diagram */
+        .architecture {
+            background: var(--bg-white);
+            padding: 30px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+
+        .architecture h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .arch-diagram {
+            background: var(--bg-light);
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            color: var(--text-primary);
+            overflow-x: auto;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--text-primary);
+            color: white;
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .contact-info a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.9;
+            transition: opacity 0.3s;
+        }
+
+        .contact-info a:hover {
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .project {
+                padding: 20px;
+            }
+
+            .project-title {
+                font-size: 1.5rem;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>个人作品集</h1>
+            <p>专注于高并发、分布式系统开发</p>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="#about">关于我</a></li>
+                <li><a href="#projects">项目展示</a></li>
+                <li><a href="#contact">联系方式</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section id="about" class="about">
+        <div class="container">
+            <h2>关于我</h2>
+            <div class="about-content">
+                <p>
+                    专注于后端开发，对高并发、分布式系统有深入的理解和实践经验。
+                    熟悉 Go 语言生态，具备从系统设计到部署运维的完整项目经验。
+                    致力于构建高性能、高可用的互联网应用系统。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects">
+        <div class="container">
+            <h2>项目展示</h2>
+            
+            <div class="project">
+                <div class="project-header">
+                    <div>
+                        <h3 class="project-title">高并发秒杀系统 (GoSeckill)</h3>
+                        <span class="project-tag">Go</span>
+                        <span class="project-tag">高并发</span>
+                        <span class="project-tag">分布式</span>
+                    </div>
+                </div>
+
+                <div class="project-description">
+                    一个基于 Go 语言开发的高并发秒杀系统，采用微服务架构设计，解决了秒杀场景下的高并发、超卖、系统稳定性等核心问题。
+                    系统支持横向扩展，具备完善的监控和部署方案。
+                </div>
+
+                <div class="tech-stack">
+                    <h3>技术栈</h3>
+                    <div class="tech-tags">
+                        <span class="tech-tag">Go 1.21</span>
+                        <span class="tech-tag">Iris Web Framework</span>
+                        <span class="tech-tag">MySQL</span>
+                        <span class="tech-tag">Redis</span>
+                        <span class="tech-tag">RabbitMQ</span>
+                        <span class="tech-tag">GORM</span>
+                        <span class="tech-tag">JWT</span>
+                        <span class="tech-tag">Systemd</span>
+                        <span class="tech-tag">Docker (可选)</span>
+                    </div>
+                </div>
+
+                <div class="features">
+                    <h3>核心功能</h3>
+                    <ul class="feature-list">
+                        <li>用户注册登录与 JWT 身份认证</li>
+                        <li>商品展示与管理（支持分类、搜索）</li>
+                        <li>动态秒杀路径生成，防止恶意刷接口</li>
+                        <li>Redis 预减库存，解决超卖问题</li>
+                        <li>RabbitMQ 异步处理订单，削峰填谷</li>
+                        <li>后台管理系统（商品管理、订单管理）</li>
+                        <li>Worker 异步任务处理</li>
+                        <li>完善的部署脚本和监控方案</li>
+                    </ul>
+                </div>
+
+                <div class="highlights">
+                    <h3>技术亮点</h3>
+                    <ul>
+                        <li><strong>高并发优化：</strong>使用 Redis 预减库存 + 异步消息队列，将数据库压力降到最低</li>
+                        <li><strong>防超卖机制：</strong>Redis DECR 原子操作 + 库存回滚机制，确保数据一致性</li>
+                        <li><strong>防刷策略：</strong>动态生成秒杀路径，5分钟有效期，防止接口被恶意调用</li>
+                        <li><strong>异步处理：</strong>秒杀请求快速返回，订单处理异步化，提升用户体验</li>
+                        <li><strong>分布式架构：</strong>Web、Admin、Worker 分离部署，支持水平扩展</li>
+                        <li><strong>幂等性保证：</strong>Redis 记录用户秒杀成功状态，防止重复秒杀</li>
+                        <li><strong>系统监控：</strong>完善的健康检查和日志管理</li>
+                    </ul>
+                </div>
+
+                <div class="architecture">
+                    <h3>系统架构</h3>
+                    <div class="arch-diagram">
+用户请求 → Web服务(8080) → JWT验证 → 动态路径生成
+                                    ↓
+                            Redis预减库存(原子操作)
+                                    ↓
+                            RabbitMQ消息队列
+                                    ↓
+                            Worker异步处理 → MySQL持久化
+                                    ↓
+                            Admin管理后台(8081) - 商品/订单管理
+                    </div>
+                </div>
+
+                <div class="project-links">
+                    <a href="https://github.com/your-username/goseckill" class="btn btn-primary" target="_blank">GitHub 仓库</a>
+                    <a href="#" class="btn btn-secondary">在线演示</a>
+                    <a href="#" class="btn btn-secondary">技术文档</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <div class="container">
+            <h2 style="color: white; margin-bottom: 20px;">联系方式</h2>
+            <div class="contact-info">
+                <a href="mailto:your-email@example.com">📧 Email</a>
+                <a href="https://github.com/your-username" target="_blank">💻 GitHub</a>
+                <a href="https://www.linkedin.com/in/your-profile" target="_blank">💼 LinkedIn</a>
+            </div>
+            <p style="margin-top: 30px; opacity: 0.8;">© 2024 个人作品集 | 持续更新中</p>
+        </div>
+    </footer>
+
+    <script>
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // 导航栏高亮
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('nav a');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.pageYOffset >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.style.color = '';
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.style.color = 'var(--primary-color)';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

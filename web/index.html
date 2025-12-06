@@ -325,6 +325,9 @@
                             <li class="nav__dropdown">
                                 <a href="javascript:void(0)" class="category-filter" data-category="accessories">饰品</a>
                             </li>
+                            <li class="nav__dropdown">
+                                <a href="javascript:void(0)" class="seckill-filter" data-seckill="true">秒杀商品</a>
+                            </li>
 
                             <!-- 登录 / 注册 不再显示在这里，统一通过右上角用户菜单处理 -->
 
@@ -353,10 +356,10 @@
         <div class="container">
             <div class="heading-row">
                 <div class="text-center">
-                    <h2 class="heading bottom-line">
+                    <h2 class="heading bottom-line" id="product-section-title">
                         在线商品
                     </h2>
-                    <p class="mt-10">以下为所有的秒杀商品 点击即可进入商品详情页</p>
+                    <p class="mt-10" id="product-section-desc">以下为所有的在线商品 点击即可进入商品详情页</p>
                 </div>
             </div>
 
@@ -629,16 +632,11 @@
         let currentKeyword = "";
         if (!listEl) return;
 
-        const username = getCookie("username");
-        if (!username) {
-            listEl.innerHTML = "<div class='col-12'><p style='color:#6b7280;font-size:14px;text-align:center;padding:40px;'>请先登录后再加载在线商品列表。</p></div>";
-                return;
-              }
-
-        // 加载商品列表的函数（支持分类 + 关键字搜索）
-        function loadProducts(category, keyword) {
+        // 加载商品列表的函数（支持分类 + 关键字搜索 + 秒杀商品筛选）
+        function loadProducts(category, keyword, seckillOnly) {
             currentCategory = category || "";
             currentKeyword = keyword || "";
+            seckillOnly = seckillOnly || false;
 
             let url = "/api/products";
             const params = [];
@@ -648,9 +646,26 @@
             if (currentKeyword) {
                 params.push("q=" + encodeURIComponent(currentKeyword));
             }
+            if (seckillOnly) {
+                params.push("seckill_only=true");
+            }
             if (params.length > 0) {
                 url += "?" + params.join("&");
             }
+            // 简单的时间格式化函数，显示到秒
+            const formatDateTime = function (value) {
+                if (!value) return "";
+                const d = (value instanceof Date) ? value : new Date(value);
+                if (isNaN(d.getTime())) return "";
+                const pad = function (n) { return String(n).padStart(2, "0"); };
+                return d.getFullYear() + "-" +
+                    pad(d.getMonth() + 1) + "-" +
+                    pad(d.getDate()) + " " +
+                    pad(d.getHours()) + ":" +
+                    pad(d.getMinutes()) + ":" +
+                    pad(d.getSeconds());
+            };
+
             api(url, { method: "GET" })
             .then(function (data) {
                 if (!data || data.code !== 0) {
@@ -658,13 +673,31 @@
                     return;
                 }
                 const products = data.data || [];
+                
+                // 更新页面标题和描述
+                const titleEl = document.getElementById("product-section-title");
+                const descEl = document.getElementById("product-section-desc");
+                if (titleEl && descEl) {
+                    if (seckillOnly) {
+                        titleEl.textContent = "秒杀商品";
+                        descEl.textContent = "以下为正在进行秒杀活动的商品 点击即可进入商品详情页";
+                    } else {
+                        titleEl.textContent = "在线商品";
+                        descEl.textContent = "以下为所有的在线商品 点击即可进入商品详情页";
+                    }
+                }
+                
                 if (products.length === 0) {
-                    listEl.innerHTML = "<div class='col-12'><p style='color:#6b7280;font-size:14px;text-align:center;padding:40px;'>当前没有在线商品，请先通过后台管理创建。</p></div>";
+                    const emptyMsg = seckillOnly 
+                        ? "当前没有正在进行秒杀活动的商品。"
+                        : "当前没有在线商品，请先通过后台管理创建。";
+                    listEl.innerHTML = "<div class='col-12'><p style='color:#6b7280;font-size:14px;text-align:center;padding:40px;'>" + emptyMsg + "</p></div>";
                     return;
                 }
 
                 // 渲染商品卡片，点击后跳转到详情页
                 listEl.innerHTML = "";
+                const now = new Date();
                 products.forEach(function (p) {
                     // 商品ID 1-12 直接对应图片 1-12
                     // 商品ID 1 -> 图片1, ID 2 -> 图片2, ..., ID 12 -> 图片12
@@ -688,6 +721,62 @@
                         mainImg = imgFolder + "product_" + imgIndex + ".jpg";
                         backImg = imgFolder + "product_back_" + imgIndex + ".jpg";
                     }
+                    // 计算基于时间的秒杀状态：以时间优先，不以库存优先
+                    let startDt = null;
+                    let endDt = null;
+                    if (p.activity && p.activity.start_time && p.activity.end_time) {
+                        startDt = new Date(p.activity.start_time);
+                        endDt = new Date(p.activity.end_time);
+                    } else if (p.StartTime && p.EndTime) {
+                        startDt = new Date(p.StartTime);
+                        endDt = new Date(p.EndTime);
+                    }
+
+                    let isSeckillActive = false;
+                    let isSeckillEndedByTime = false;
+                    if (startDt && endDt && !isNaN(startDt.getTime()) && !isNaN(endDt.getTime())) {
+                        // 只有“商品状态为秒杀中 + 当前时间在活动时间内”才认为是真正的秒杀中
+                        if (p.Status === 2 && now >= startDt && now <= endDt) {
+                            isSeckillActive = true;
+                        } else if (now > endDt) {
+                            isSeckillEndedByTime = true;
+                        }
+                    }
+
+                    // 若当前在“秒杀商品”页，但该商品按时间已不在活动窗口内，则跳过（只显示真正正在进行中的秒杀）
+                    if (seckillOnly && !isSeckillActive) {
+                        return;
+                    }
+
+                    // 活动时间和当前时间展示（仅在“秒杀商品”页面中显示）
+                    let activityTimeHtml = "";
+                    if (seckillOnly && startDt && endDt) {
+                        const startText = formatDateTime(startDt);
+                        const endText = formatDateTime(endDt);
+                        const nowText = formatDateTime(now);
+                        activityTimeHtml = [
+                            '<div style="margin-top:5px;font-size:12px;color:#4b5563;line-height:1.4;">',
+                            '  <div><strong>秒杀时间：</strong>' + startText + ' ~ ' + endText + '</div>',
+                            '  <div><strong>当前时间：</strong>' + nowText + '</div>',
+                            '</div>'
+                        ].join("");
+                    }
+
+                    // 价格展示：秒杀页显示折扣价 + 原价划线，其他情况显示原价
+                    let priceHtml = '<span class="product__price"><ins><span class="amount">$' + (p.Price / 100).toFixed(2) + "</span></ins></span>";
+                    if (isSeckillActive && p.activity && p.activity.discount && !isNaN(parseFloat(p.activity.discount))) {
+                        const discount = parseFloat(p.activity.discount);
+                        if (discount > 0 && discount <= 1) {
+                            const discountPrice = (p.Price / 100 * discount).toFixed(2);
+                            priceHtml = [
+                                '<span class="product__price">',
+                                '  <ins><span class="amount" style="color:#dc3545;font-weight:700;">$' + discountPrice + "</span></ins>",
+                                '  <del style="margin-left:6px;color:#9ca3af;">$' + (p.Price / 100).toFixed(2) + "</del>",
+                                "</span>"
+                            ].join("");
+                        }
+                    }
+
                     col.innerHTML = [
                         '<div class="product__img-holder">',
                         '  <a href="/product/' + p.ID + '" class="product__link">',
@@ -696,15 +785,76 @@
                         "  </a>",
                         "</div>",
                         '<div class="product__details">',
-                        '  <h3 class="product__title"><a href="/product/' + p.ID + '">' + p.Name + "</a></h3>",
+                        '  <h3 class="product__title"><a href="/product/' + p.ID + '">' + p.Name +
+                            (isSeckillActive ? '<span class="badge bg-danger" style="margin-left:5px;font-size:10px;">秒杀中</span>' : (isSeckillEndedByTime ? '<span class="badge bg-secondary" style="margin-left:5px;font-size:10px;">已结束</span>' : '')) +
+                            "</a></h3>",
+                        "  " + priceHtml,
+                        (isSeckillActive && p.SeckillStock !== undefined) ? 
+                            '<div style="margin-top:5px;font-size:12px;color:#dc3545;"><strong>秒杀库存：</strong><span class="seckill-stock-' + p.ID + '" data-product-id="' + p.ID + '">' + p.SeckillStock + '</span></div>' : '',
+                        activityTimeHtml,
+                        '  <div style="margin-top:10px;">',
+                        '    <button class="btn btn-sm btn-color" data-purchase="' + p.ID + '">' + (isSeckillActive ? "秒杀" : "立即购买") + "</button>",
+                        "  </div>",
                         "</div>",
-                        '<span class="product__price">',
-                        "  <ins>",
-                        '    <span class="amount">$' + (p.Price / 100).toFixed(2) + "</span>",
-                        "  </ins>",
-                        "</span>",
                     ].join("");
                     listEl.appendChild(col);
+                    const btn = col.querySelector("button[data-purchase]");
+                    if (btn) {
+                        btn.addEventListener("click", function (e) {
+                            e.preventDefault();
+                            const token = getCookie("token");
+                            if (!token) {
+                                alert("请先登录后再购买");
+                                window.location.href = "/login";
+                                return;
+                            }
+                            btn.disabled = true;
+                            btn.textContent = "提交中...";
+                            if (isSeckillActive) {
+                                // 秒杀流程：先获取path，再提交秒杀请求
+                                api("/api/seckill/" + p.ID + "/path", { method: "GET" })
+                                    .then(function (res) {
+                                        if (!res || res.code !== 0 || !res.data || !res.data.path) {
+                                            throw new Error(res && res.msg ? res.msg : "获取秒杀路径失败");
+                                        }
+                                        const path = res.data.path;
+                                        return api("/api/seckill/" + p.ID + "/" + path, { method: "POST" });
+                                    })
+                                    .then(function (res) {
+                                        if (!res || res.code !== 0) {
+                                            throw new Error(res && res.msg ? res.msg : "秒杀请求失败");
+                                        }
+                                        alert("秒杀请求成功，正在排队，请稍后在订单或结果中查看。");
+                                    })
+                                    .catch(function (err) {
+                                        alert("秒杀失败：" + err);
+                                    })
+                                    .finally(function () {
+                                        btn.disabled = false;
+                                        btn.textContent = "秒杀";
+                                    });
+                            } else {
+                                api("/api/purchase", {
+                                    method: "POST",
+                                    body: JSON.stringify({ product_id: p.ID, quantity: 1 })
+                                }).then(function (res) {
+                                    if (!res || res.code !== 0) {
+                                        throw new Error(res && res.msg ? res.msg : "购买失败");
+                                    }
+                                    alert("购买成功，订单号：" + res.data.order_id);
+                                    // 简单前端减库存：若存在库存字段则减少 1
+                                    if (typeof p.Stock === "number") {
+                                        p.Stock = Math.max(0, p.Stock - 1);
+                                    }
+                                }).catch(function (err) {
+                                    alert("购买失败：" + err);
+                                }).finally(function () {
+                                    btn.disabled = false;
+                                    btn.textContent = "立即购买";
+                                });
+                            }
+                        });
+                    }
         });
             })
             .catch(function (e) {
@@ -712,8 +862,40 @@
             });
         }
 
-        // 初始加载所有商品（不传分类 / 关键字）
-        loadProducts("", "");
+        // 初始加载所有商品（不传分类 / 关键字 / 秒杀筛选）
+        loadProducts("", "", false);
+
+        // 定时刷新商品列表（每1秒刷新一次，确保商品状态和秒杀库存尽量实时）
+        setInterval(function() {
+            // 只在当前页面显示商品列表时才刷新
+            if (listEl && listEl.parentElement && listEl.parentElement.offsetParent !== null) {
+                const isSeckillActive = document.querySelector(".seckill-filter") && 
+                    document.querySelector(".seckill-filter").parentElement.classList.contains("active");
+                loadProducts(currentCategory, currentKeyword, isSeckillActive);
+            }
+        }, 1000); // 1秒刷新一次
+        
+        // 定时更新秒杀库存显示（每5秒更新一次，只更新秒杀商品的库存）
+        setInterval(function() {
+            if (listEl && listEl.parentElement && listEl.parentElement.offsetParent !== null) {
+                // 查找所有秒杀商品的库存元素
+                const seckillStockElements = listEl.querySelectorAll('[data-product-id]');
+                seckillStockElements.forEach(function(el) {
+                    const productId = el.getAttribute('data-product-id');
+                    if (productId) {
+                        api("/api/products/" + productId + "/seckill-stock", { method: "GET" })
+                            .then(function(res) {
+                                if (res && res.data && res.data.stock !== undefined) {
+                                    el.textContent = res.data.stock;
+                                }
+                            })
+                            .catch(function(err) {
+                                console.error("更新秒杀库存失败:", err);
+                            });
+                    }
+                });
+            }
+        }, 5000); // 5秒更新一次秒杀库存
 
         // 分类按钮点击事件
         document.querySelectorAll(".category-filter").forEach(function(btn) {
@@ -724,8 +906,21 @@
                     li.classList.remove("active");
                 });
                 this.parentElement.classList.add("active");
-                // 加载对应分类的商品，保留当前关键字
-                loadProducts(category, currentKeyword);
+                // 加载对应分类的商品，保留当前关键字，不显示秒杀商品
+                loadProducts(category, currentKeyword, false);
+            });
+        });
+
+        // 秒杀商品按钮点击事件
+        document.querySelectorAll(".seckill-filter").forEach(function(btn) {
+            btn.addEventListener("click", function() {
+                // 更新按钮激活状态
+                document.querySelectorAll(".nav__menu li").forEach(function(li) {
+                    li.classList.remove("active");
+                });
+                this.parentElement.classList.add("active");
+                // 加载秒杀商品，保留当前关键字
+                loadProducts("", currentKeyword, true);
             });
         });
 
@@ -734,8 +929,10 @@
             searchForm.addEventListener("submit", function (e) {
                 e.preventDefault();
                 const kw = searchInput.value.trim();
-                // 使用当前分类 + 新关键字重新加载
-                loadProducts(currentCategory, kw);
+                // 使用当前分类 + 新关键字重新加载（保持秒杀筛选状态）
+                const isSeckillActive = document.querySelector(".seckill-filter") && 
+                    document.querySelector(".seckill-filter").parentElement.classList.contains("active");
+                loadProducts(currentCategory, kw, isSeckillActive);
             });
         }
     })();

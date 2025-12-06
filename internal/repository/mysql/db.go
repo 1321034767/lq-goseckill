@@ -8,9 +8,11 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/example/goseckill/internal/config"
+	"github.com/example/goseckill/internal/datamodels/account"
 	"github.com/example/goseckill/internal/datamodels/chat"
 	"github.com/example/goseckill/internal/datamodels/order"
 	"github.com/example/goseckill/internal/datamodels/product"
+	"github.com/example/goseckill/internal/datamodels/seckill_activity"
 	"github.com/example/goseckill/internal/datamodels/user"
 )
 
@@ -28,7 +30,16 @@ func Init(cfg *config.MySQLConfig) *gorm.DB {
 			log.Fatalf("failed to connect mysql: %v", err)
 		}
 
-		if err = db.AutoMigrate(&user.User{}, &product.Product{}, &order.Order{}, &chat.Message{}); err != nil {
+		if err = db.AutoMigrate(
+			&user.User{},
+			&product.Product{},
+			&order.Order{},
+			&chat.Message{},
+			&account.Account{},
+			&account.Transaction{},
+			&seckill_activity.SeckillActivity{},
+			&seckill_activity.SeckillActivityProduct{},
+		); err != nil {
 			log.Fatalf("auto migrate failed: %v", err)
 		}
 	})

@@ -1,0 +1,4 @@
+2025/12/05 20:44:07 web server listening on 0.0.0.0:8080
+[ERRO] 2025/12/05 20:44 listen tcp 0.0.0.0:8080: bind: address already in use
+2025/12/05 20:44:07 failed to run web server: listen tcp 0.0.0.0:8080: bind: address already in use
+exit status 1

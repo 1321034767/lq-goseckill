@@ -20,6 +20,7 @@ type Repository interface {
 	GetByID(ctx context.Context, id int64) (*User, error)
 	GetByUsername(ctx context.Context, username string) (*User, error)
 	Create(ctx context.Context, u *User) error
+	ListAll(ctx context.Context) ([]*User, error)
 }
 
 

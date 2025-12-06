@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/kataras/iris/v12"
@@ -81,15 +82,24 @@ func (c *UserController) PostAdd(ctx iris.Context) {
 	password := ctx.FormValue("password")
 
 	if username == "" || password == "" {
-		ctx.ContentType("text/html; charset=utf-8")
-		_, _ = ctx.WriteString("<h2>用户名和密码不能为空</h2>")
+		_ = ctx.View("user/register.html", iris.Map{
+			"errorMessage": "用户名和密码不能为空",
+			"username":     username,
+		})
 		return
 	}
 
 	_, err := c.userService.Register(ctx.Request().Context(), username, password)
 	if err != nil {
-		ctx.ContentType("text/html; charset=utf-8")
-		_, _ = ctx.WriteString("<h2>注册失败: " + err.Error() + "</h2>")
+		msg := "注册失败，请更换用户名或稍后再试"
+		// 尝试识别重复用户名的常见错误文案
+		if strings.Contains(err.Error(), "Duplicate entry") {
+			msg = "用户名已存在，请更换一个新的用户名"
+		}
+		_ = ctx.View("user/register.html", iris.Map{
+			"errorMessage": msg,
+			"username":     username,
+		})
 		return
 	}
 
